@@ -52,7 +52,7 @@
                             }
                         }
                     </script> 
-                    {% if is_superadmin %}
+                    {% if user_type == 'superadmin' %}
                     <div class="row mt-3">
                         <div class="col">
                             <h2>Регистрация администратора</h2>

@@ -1,9 +1,10 @@
 from uuid import UUID, uuid4
 from pony.orm import *
-
+from os import environ
 
 db = Database()
-db.bind(provider='sqlite', filename='database.db', create_db=True)
+PROVIDER = environ.get("PROVIDER", "sqlite")
+db.bind(provider=PROVIDER, filename='database.db', create_db=True)
 
 
 class User(db.Entity):

@@ -146,12 +146,16 @@ def register(key):
     user = User.get(key=key)
     session_key = get_session_key(session)
     error = None
+    user_type = get_user_type(session)
     if not user:
         error = "Ошибка: недействительный QR-код"
+        return render_template("register.html", error=error, user_type=user_type.value)
     if session_key and session_key != user.key:
         error = "Ошибка: по этому QR-коду уже кто-то зарегистрирован"
+        return render_template("register.html", error=error, user_type=user_type.value)
     if session_key and session_key == user.key:
         error = "Ошибка: вы уже зарегистрированы по этому QR-коду"
+        return render_template("register.html", error=error, user_type=user_type.value)
     if error:
         user_type=get_user_type(session)
         return render_template("register.html", error=error, user_type=user_type.value)
@@ -167,6 +171,8 @@ def register(key):
 @app.route("/projects")
 def projects():
     user_type=get_user_type(session)
+    if user_type not in VALID_ADMIN_TYPES:
+        return redirect(url_for('index'))
     projects = [p.to_dict() for p in Project.select()[:]]
     for p in projects:
         url = url_for('vote', project_key=p["key"], _external=True)
@@ -179,42 +185,30 @@ def projects():
 def vote(project_key):
     error = None
     user_type=get_user_type(session)
-    # TODO Show errors in template for this route
     session_key = get_session_key(session)
     project = Project.get(key=project_key)
     if not project:
-        return redirect(url_for('index'))
-    # Anonimous
+        error = "Ошибка: нет такого проекта!"
+        return render_template('vote.html', error=error, user_type=user_type.value)
     if not session_key:
         return redirect(url_for('index'))
+    
     user = User.get(key=session_key)
-    
-    #TODO show error
-
-    # Wrong session key (no user with such key)
     if not user:
-        return redirect(url_for('index'))
+        return redirect(url_for('logout'))
+    if user_type not in (UserType.guest, UserType.expert):
+        error = "Ошибка: администраторы не могут голосовать!"
+        return render_template('vote.html', error=error, user_type=user_type.value)
     
-    # Not guest or expert
-    if UserType(user.type) not in (UserType.guest, UserType.expert):
-        return redirect(url_for('index'))
-
-    # Already voted or marked
-
     votes = user.votes.select(project=project.id)[:]
-    print(votes)
     marks = user.marks.select(project=project.id)[:]
     if marks:
-        error = "Error: already marked!"
+        error = "Ошибка: вы уже оценили этот проект!"
     if votes:
-        error = "Error: already voted!"
+        error = "Ошибка: вы уже голосовали за этот проект!"
     votes_count = user.votes.count()
     if MAX_USER_VOTE_COUNT - votes_count <= 0:
-        error = "Errro: no more votes!"
-    # Проверить, голосовал ли юзер
-    # По юзеру выдать вариант голосования 
-    #error = None
-    print(MAX_USER_VOTE_COUNT - len(votes))
+        error = "Ошибка: вы использовали все свои голоса!"
     return render_template('vote.html', user=user, error=error, project=project, user_type=user_type.value)
 
 @app.post("/vote/<project_key>")
@@ -226,20 +220,22 @@ def vote_submit(project_key):
         return redirect(url_for('index'))
     if not project:
         return redirect(url_for('index'))
-    # Anonimous
     if not session_key:
         return redirect(url_for('index'))
     user = User.get(key=session_key)
-    # Wrong session key (no user with such key)
     if not user:
         return redirect(url_for('index'))
-    # Not guest or expert
     if UserType(user.type) not in (UserType.guest, UserType.expert):
         return redirect(url_for('index'))
-    
+    votes = user.votes.select(project=project.id)[:]
+    marks = user.marks.select(project=project.id)[:]
+    if marks:
+        return redirect(url_for('index'))
+    if votes:
+        return redirect(url_for('index'))
     if UserType(user.type) == UserType.guest:
         votes_count = user.votes.count()
-        if MAX_USER_VOTE_COUNT - len(votes_count) <= 0:
+        if MAX_USER_VOTE_COUNT - votes_count <= 0:
             return redirect(url_for('index'))
         vote = Vote(project=project.id, user=user.id)
     if UserType(user.type) == UserType.expert:
@@ -257,7 +253,6 @@ def vote_submit(project_key):
 def vote_result():
     user_type=get_user_type(session)
     session_key = get_session_key(session)
-    # Anonymous
     if not session_key:
         return redirect(url_for('index'))
     user = User.get(key=session_key)

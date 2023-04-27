@@ -1,23 +1,30 @@
 {% extends 'base.html' %}
 {% block title %}
-    {% if user.type == 'user' %}
+    {% if user_type == 'guest' %}
         Голосование за проект - Весенняя проектная школа
     {% endif %}
-    {% if user.type == 'expert' %}
+    {% if user_type == 'expert' %}
         Оценка проекта - Весенняя проектная школа
     {% endif %}
 {% endblock title %}
 {% block content %}
 
     {% if error %}
-    <div class="row mt-4">
-        <div class="col">
-            <h2>{{ error }}</h2>
+    <div class="container text-center">
+        <div class="row mt-5">
+            <div class="col">
+                <h2>{{ error }}</h2>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <a href="{{ url_for('index') }}"><button class="btn btn-primary">На главную страницу</button></a>
+            </div>
         </div>
     </div>
     {% else %}
         <div class="container text-center">
-            {% if user.type == 'guest' %}
+            {% if user_type == 'guest' %}
                 <div class="row mt-4">
                     <div class="col">
                         <h2>Голосование за проект</h2>
@@ -48,7 +55,7 @@
                 </div>
             {% endif %}
 
-            {% if user.type == 'expert' %}
+            {% if user_type == 'expert' %}
                 <div class="row mt-4">
                     <div class="col">
                         <h2>Оценка проекта {{ project.name }}</h2>

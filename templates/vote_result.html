@@ -10,7 +10,7 @@
 {% block content %}
 <div class="container text-center">
     {% if user.type == 'expert' %}
-        <div class="row mt-3">
+        <div class="row mt-5">
             <div class="col">
                 <h2>Спасибо, что оценили проект!</h2>
             </div>
@@ -28,10 +28,15 @@
             </div>
         </div>
         {% endif %}
+        <div class="row mt-5">
+            <div class="col">
+                <a href="{{ url_for('index') }}"><button class="btn btn-primary">На главную страницу</button></a>
+            </div>
+        </div>
         
     {% endif %}
-    {% if user.type == 'user' %}
-        <div class="row mt-3">
+    {% if user.type == 'guest' %}
+        <div class="row mt-5">
             <div class="col">
                 <h2>Спасибо, что отдали свой голос проекту!</h2>
             </div>
@@ -49,6 +54,11 @@
             </div>
         </div> 
         {% endif %}
+        <div class="row mt-5">
+            <div class="col">
+                <a href="{{ url_for('index') }}"><button class="btn btn-primary">На главную страницу</button></a>
+            </div>
+        </div>
     {% endif %}
 </div>
 {% endblock content %}
