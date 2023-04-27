@@ -56,15 +56,6 @@ app = Flask(__name__)
 app.secret_key = environ.get("SECRET_KEY")
 Pony(app)
 
-with db_session:
-    superadmin = User.get(type=UserType.superadmin.value)
-    key = str(uuid4())
-    if not superadmin:
-        superadmin = User(name="Pikvic", key=key, type=UserType.superadmin.value, activated=True)
-   
-
-# TODO во всех шаблонах проверять на ошибки
-
 
 @app.route("/")
 def index():
