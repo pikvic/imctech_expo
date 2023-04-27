@@ -8,6 +8,9 @@ with open('projects.yaml', 'rt', encoding='utf-8') as file:
 
 with db_session:
     for p in projects["projects"]:
+        proj = Project.get(key=p["key"])
+        if proj:
+            continue
         project = Project(name=p["name"], type=p["type"], description=p["description"], team=p["team"], key=p["key"])
         for m in p["members"]:
             mem_dict = {k: v for k, v in m.items() if v is not None}

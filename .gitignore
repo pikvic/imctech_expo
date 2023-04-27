@@ -1,6 +1,6 @@
 projects.yaml
-database/__pycache__/
-database/database.db
+*/__pycache__/
+database.db
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

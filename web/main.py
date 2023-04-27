@@ -262,3 +262,6 @@ def vote_result():
         "user_type": user_type.value
     }
     return render_template('vote_result.html', **context)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
