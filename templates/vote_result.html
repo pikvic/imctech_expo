@@ -8,21 +8,47 @@
     {% endif %}
 {% endblock title %}
 {% block content %}
+<div class="container text-center">
     {% if user.type == 'expert' %}
-        <h2>Спасибо, что оценили проект!</h2>
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Спасибо, что оценили проект!</h2>
+            </div>
+        </div>
         {% if count_left > 0 %}
-            <h2>Осталось оценить проектов: {{ count_left }}</h2>
+        <div class="row mt-3">
+            <div class="col">
+              <h2>Осталось оценить проектов: {{ count_left }}</h2>
+            </div>
+        </div>
         {% else %}
-            <h2>Вы оценили все проекты! Большое спасибо! Ждём на подведении итогов и награждении!</h2>            
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Вы оценили все проекты! Большое спасибо! Ждём на подведении итогов и награждении!</h2>
+            </div>
+        </div>
         {% endif %}
         
     {% endif %}
     {% if user.type == 'user' %}
-        <h2>Спасибо, что отдали свой голос проекту!</h2>
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Спасибо, что отдали свой голос проекту!</h2>
+            </div>
+        </div>
         {% if count_left > 0 %}
-            <h2>Осталось голосов: {{ count_left }}</h2>
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Осталось голосов: {{ count_left }}</h2>
+            </div>
+        </div>
         {% else %}
-            <h2>Вы отдали все свои голоса! Большое спасибо! Ждём на подведении итогов и награждении!</h2>            
+        <div class="row mt-3">
+            <div class="col">
+                <h2>Вы отдали все свои голоса! Большое спасибо! Ждём на подведении итогов и награждении!</h2>           
+            </div>
+        </div> 
         {% endif %}
     {% endif %}
+</div>
 {% endblock content %}

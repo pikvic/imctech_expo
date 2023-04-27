@@ -63,20 +63,32 @@ with db_session:
         superadmin = User(name="Pikvic", key=key, type=UserType.superadmin.value, activated=True)
    
 
-
-# TODO везде проверять куки
 # TODO во всех шаблонах проверять на ошибки
 
 
 @app.route("/")
 def index():
     user_type = get_user_type(session)
-    return render_template('index.html', user_type=str(user_type))
+    context = {"user_type": user_type.value}
+    if user_type == UserType.guest or user_type == UserType.expert:
+        session_key = get_session_key(session)
+        user = User.get(key=session_key)
+        if user_type == UserType.guest:
+            count_left = MAX_USER_VOTE_COUNT - len(user.votes)
+            projects_voted = [v.project for v in user.votes.select(lambda v: v)[:]]
+            context["count_left"] = count_left
+            context["projects_voted"] = projects_voted
+        if user_type == UserType.expert:
+            count_left = get_all_projects_count() - len(user.marks)
+            projects_marked = [m.project for m in user.marks.select(lambda m: m)[:]]
+            context["count_left"] = count_left
+            context["projects_marked"] = projects_marked
+    return render_template('index.html', **context)
 
 @app.route("/login")
 def login():
     user_type = get_user_type(session)
-    return render_template('login.html', user_type=str(user_type))
+    return render_template('login.html', user_type=user_type.value)
 
 @app.post("/login")
 def login_post():
@@ -97,7 +109,7 @@ def invite(error=None):
     user_type = get_user_type(session)
     if user_type not in VALID_ADMIN_TYPES:
         return redirect(url_for('index'))
-    return render_template('invite.html', user_type=str(user_type))
+    return render_template('invite.html', user_type=user_type.value)
 
 @app.post("/invite")
 def invite_post():
@@ -127,7 +139,7 @@ def invite_qrcode(url, who):
     if user_type not in VALID_ADMIN_TYPES:
         return redirect(url_for('index'))
     qrcode = segno.make(url)
-    return render_template('invite_qrcode.html', who=who, qrcode=qrcode, url=url, user_type=str(user_type))
+    return render_template('invite_qrcode.html', who=who, qrcode=qrcode, url=url, user_type=user_type.value)
 
 @app.route("/register/<key>")
 def register(key):
@@ -142,14 +154,14 @@ def register(key):
         error = "Ошибка: вы уже зарегистрированы по этому QR-коду"
     if error:
         user_type=get_user_type(session)
-        return render_template("register.html", error=error, user_type=str(user_type))
+        return render_template("register.html", error=error, user_type=user_type.value)
     
     if not session_key and not user.activated:
         user.activated = True
         who = [WHO[i] for i, ut in enumerate(VALID_USER_TYPES) if ut == UserType(user.type)][0]
         session["key"] = user.key
         user_type=get_user_type(session)
-        return render_template("register.html", who=who, error=error, user_type=str(user_type))
+        return render_template("register.html", who=who, error=error, user_type=user_type.value)
 
 
 @app.route("/projects")
@@ -161,7 +173,7 @@ def projects():
         qrcode = segno.make(url)
         p["url"] = url
         p["qrcode"] = qrcode
-    return render_template('projects.html', projects=projects, user_type=str(user_type))
+    return render_template('projects.html', projects=projects, user_type=user_type.value)
 
 @app.route("/vote/<project_key>")
 def vote(project_key):
@@ -196,12 +208,14 @@ def vote(project_key):
         error = "Error: already marked!"
     if votes:
         error = "Error: already voted!"
-
+    votes_count = user.votes.count()
+    if MAX_USER_VOTE_COUNT - votes_count <= 0:
+        error = "Errro: no more votes!"
     # Проверить, голосовал ли юзер
     # По юзеру выдать вариант голосования 
     #error = None
-    
-    return render_template('vote.html', user=user, error=error, project=project, user_type=str(user_type))
+    print(MAX_USER_VOTE_COUNT - len(votes))
+    return render_template('vote.html', user=user, error=error, project=project, user_type=user_type.value)
 
 @app.post("/vote/<project_key>")
 def vote_submit(project_key):
@@ -224,6 +238,9 @@ def vote_submit(project_key):
         return redirect(url_for('index'))
     
     if UserType(user.type) == UserType.guest:
+        votes_count = user.votes.count()
+        if MAX_USER_VOTE_COUNT - len(votes_count) <= 0:
+            return redirect(url_for('index'))
         vote = Vote(project=project.id, user=user.id)
     if UserType(user.type) == UserType.expert:
         marks = {
@@ -256,6 +273,6 @@ def vote_result():
     context = {
         "count_left": count_left,
         "user": user,
-        "user_type": str(user_type)
+        "user_type": user_type.value
     }
     return render_template('vote_result.html', **context)
