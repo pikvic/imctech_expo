@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}
+    Генерация QR-кода - Весенняя проектная школа
+{% endblock title %}
+{% block content %}
+<div class="conainter text-center">
+    <div class="row mt-5 mx-auto">
+        <div class="col">
+            <h2>Ваш QR-код для приглашения {{ who }}</h2>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col">
+            <a href="{{ url }}"><img src="{{ qrcode.svg_data_uri(scale=6) }}" class="mx-auto d-block"></a>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col">
+            <a href="{{ url_for('invite') }}"><button class="btn btn-primary">Вернуться назад</button></a>
+        </div>
+    </div>
+    
+</div>
+{% endblock content %}

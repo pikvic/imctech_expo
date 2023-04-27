@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}
+    {% if user.type == 'user' %}
+        Голосование за проект - Весенняя проектная школа
+    {% endif %}
+    {% if user.type == 'expert' %}
+        Оценка проекта - Весенняя проектная школа
+    {% endif %}
+{% endblock title %}
+{% block content %}
+
+    {% if error %}
+        <h2>{{ error }}</h2>
+    {% else %}
+        
+        {% if user.type == 'guest' %}
+            <div class="row">
+                <div class="col">
+                    <h2>Голосование за проект</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h3>{{ project.name }}</h3>
+                </div>
+                <div class="col">
+                    {{ project.description }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <form action="" method="post">
+                        <input type="text" name="vote" value="1" hidden>
+                        <button type="submit" class="btn btn-primary">Отдать голос</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if user.type == 'expert' %}
+        <div class="row">
+            <div class="col ">
+            <form action="" method="post" id="theform" onchange="checkform()">
+                <fieldset>
+                    {% if project.type == 'internal' %}
+                        <legend>Проработка собственной идеи</legend>
+                    {% endif %}
+                    {% if project.type == 'external' or project.type == 'study' %}
+                        <legend>Соответстие требованиям заказчика</legend>
+                    {% endif %}
+                    
+                
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="idea" id="idea1" value="1">
+                    <label class="form-check-label" for="idea1">1</label>
+                </div>
+                
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="idea" id="idea2" value="2">
+                    <label class="form-check-label" for="idea2">2</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="idea" id="idea3" value="3">
+                    <label class="form-check-label" for="idea3">3</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="idea" id="idea4" value="4">
+                    <label class="form-check-label" for="idea4">4</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="idea" id="idea5" value="5">
+                    <label class="form-check-label" for="idea5">5</label>
+                </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Дизайн</legend>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="design" id="design1" value="1">
+                        <label class="form-check-label" for="design1">1</label>
+                    </div>
+                    
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="design" id="design2" value="2">
+                        <label class="form-check-label" for="design2">2</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="design" id="design3" value="3">
+                        <label class="form-check-label" for="design3">3</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="design" id="design4" value="4">
+                        <label class="form-check-label" for="design4">4</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="design" id="design5" value="5">
+                        <label class="form-check-label" for="design5">5</label>
+                    </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Функционал</legend>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="features" id="features1" value="1">
+                            <label class="form-check-label" for="features1">1</label>
+                        </div>
+                        
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="features" id="features2" value="2">
+                            <label class="form-check-label" for="features2">2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="features" id="features3" value="3">
+                            <label class="form-check-label" for="features3">3</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="features" id="features4" value="4">
+                            <label class="form-check-label" for="features4">4</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="features" id="features5" value="5">
+                            <label class="form-check-label" for="features5">5</label>
+                        </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>MVP, реализация</legend>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="mvp" id="mvp1" value="1">
+                                <label class="form-check-label" for="mvp1">1</label>
+                            </div>
+                            
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="mvp" id="mvp2" value="2">
+                                <label class="form-check-label" for="mvp2">2</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="mvp" id="mvp3" value="3">
+                                <label class="form-check-label" for="mvp3">3</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="mvp" id="mvp4" value="4">
+                                <label class="form-check-label" for="mvp4">4</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="mvp" id="mvp5" value="5">
+                                <label class="form-check-label" for="mvp5">5</label>
+                            </div>
+                            </fieldset>
+                            <fieldset>
+                                <legend>Команда, опыт, уроки</legend>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="team" id="team1" value="1">
+                                    <label class="form-check-label" for="team1">1</label>
+                                </div>
+                                
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="team" id="team2" value="2">
+                                    <label class="form-check-label" for="team2">2</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="team" id="team3" value="3">
+                                    <label class="form-check-label" for="team3">3</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="team" id="team4" value="4">
+                                    <label class="form-check-label" for="team4">4</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="team" id="team5" value="5">
+                                    <label class="form-check-label" for="team5">5</label>
+                                </div>
+                                </fieldset>
+                                <button type="submit" class="btn btn-primary" id="submitbutton" disabled>Отправить оценки</button>
+            </form>
+            </div>
+        </div>
+        <script type="text/javascript" language="javascript">
+            function checkform()
+            {
+                var f = document.forms["theform"].elements;
+                var cansubmit = true;
+        
+                if (!(f.idea.value && f.design.value && f.features.value && f.mvp.value && f.team.value)) cansubmit = false;
+                
+                if (cansubmit) {
+                    document.getElementById('submitbutton').disabled = false;
+                }
+            }
+        </script> 
+            
+        {% endif %}
+    {% endif %}
+
+
+{% endblock content %}

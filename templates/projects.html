@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}
+    Список проектов - Весенняя проектная школа    
+{% endblock title %}
+
+
+{% block content %}
+    <div class="container">
+        {% for project in projects %}
+            <div class="row mt-3">
+                <div class="col"><a href="{{ project.url }}">{{ project.name }}</a></div>
+                <div class="col">{{ project.description }}</div>
+                <div class="col"><a href="{{ project.url }}"><img src="{{ project.qrcode.svg_data_uri(scale=6) }}"></a></div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

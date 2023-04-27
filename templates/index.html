@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Выставка проектов - Весенняя проектная школа
+{% endblock title %}
+
+{% block content %}
+   {% if user_type == 'anonymous' %}
+
+   {% endif %}
+   {% if user_type == 'guest' %}
+
+   {% endif %}
+   {% if user_type == 'expert' %}
+
+   {% endif %}
+   {% if user_type == 'admin' %}
+
+   {% endif %}
+   {% if user_type == 'superadmin' %}
+
+   {% endif %}
+
+
+{% endblock content %}
