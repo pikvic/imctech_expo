@@ -4,7 +4,15 @@ from os import environ
 
 db = Database()
 PROVIDER = environ.get("PROVIDER", "sqlite")
-db.bind(provider=PROVIDER, filename='database.db', create_db=True)
+if PROVIDER == "sqlite":
+    db.bind(provider=PROVIDER, filename='database.db', create_db=True)
+elif PROVIDER == "postgres":
+    USER = environ.get("DB_USER", "postgres")
+    PASSWORD = environ.get("DB_PASSWORD", "postgres")
+    HOST = environ.get("DB_HOST", "localhost:5432")
+    db.bind(provider=PROVIDER, user=USER, password=PASSWORD, host=HOST, database="expo")
+else:
+    db.bind(provider=PROVIDER, filename='database.db', create_db=True)
 
 
 class User(db.Entity):
