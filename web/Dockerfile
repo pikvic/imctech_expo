@@ -1,7 +1,18 @@
-FROM python:3.10
+# Pull base image
+FROM python:3.10.2-alpine
 
-COPY requirements.txt requirements.txt
+# Set environment varibles
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-RUN python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+WORKDIR /code/
 
-COPY . .
+# Set time zone
+RUN cp /usr/share/zoneinfo/Asia/Vladivostok /etc/localtime
+
+# Install dependencies
+COPY . /code/
+
+RUN pip install -r requirements.txt --progress-bar ascii
+
+EXPOSE 8000

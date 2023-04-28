@@ -1,4 +1,5 @@
 projects.yaml
+postgres-data/
 */__pycache__/
 database.db
 # Byte-compiled / optimized / DLL files

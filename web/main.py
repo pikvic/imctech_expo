@@ -6,6 +6,7 @@ from uuid import uuid4
 from os import environ
 from pony.orm import db_session, select
 from enum import Enum
+from init_db import create_projects, create_superadmin
 
 
 class UserType(Enum):
@@ -264,4 +265,6 @@ def vote_result():
     return render_template('vote_result.html', **context)
 
 if __name__ == '__main__':
+    create_superadmin()
+    create_projects()
     app.run(host='0.0.0.0', port=8000)

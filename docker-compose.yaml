@@ -1,38 +1,37 @@
-version: '3'
+version: "3"
+
 services:
   db:
-    image: "postgres:9.6.5"
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=expo
+    restart: always
     volumes:
-      - "dbdata:/var/lib/postgresql/data"
-    env_file:
-      - env_file
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
-      - db_nw
-  flaskapp:
-    build: .
-    env_file:
-      - env_file
+      - default
+  
+  expo:
+    build: ./web
+    command: "gunicorn main:app -b 0.0.0.0 -w 4"
     volumes:
-      - .:/opt/services/flaskapp/src
-    networks:
-      - db_nw
-      - web_nw
+      - ./web:/code
+    ports:
+      - "8000:8000"
     depends_on:
       - db
-  nginx:
-    image: "nginx:1.13.5"
-    ports:
-      - "8080:80"
-    volumes:
-      - ./conf.d:/etc/nginx/conf.d
+    environment:
+      - PROVIDER=sqlite
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=localhost
+      - SUPERADMIN_PASSWORD=password
+      - SECRET_KEY=key
+    restart: always
     networks:
-      - web_nw
-    depends_on: 
-      - flaskapp
-networks:
-  db_nw:
-    driver: bridge
-  web_nw:
-    driver: bridge
-volumes:
-  dbdata:
+      - default
+
